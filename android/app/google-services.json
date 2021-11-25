@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "296462114021",
+    "project_id": "privchat-4a858",
+    "storage_bucket": "privchat-4a858.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:296462114021:android:19abb6ca4bdcab628c080c",
+        "android_client_info": {
+          "package_name": "com.dranzeravi.privchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "296462114021-katlqktrha95e9tg44t0736v74icbgfl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMQ8D98fUukr5HMMxr7zwm3TcQkAFioVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "296462114021-katlqktrha95e9tg44t0736v74icbgfl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
