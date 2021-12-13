@@ -18,14 +18,15 @@ DatabaseReference ref = FirebaseDatabase.instance.reference().child('Messages');
 
 class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey<ScaffoldState> _scaffoldkey = new GlobalKey<ScaffoldState>();
-  Future<String> getDecryptedText(Map msg) async {
+  Future<String> getDecryptedText(Map msg, String keyPassword) async {
+    print('Decrypting Message');
     final cryptor = new PlatformStringCryptor();
 
-    final String key = await cryptor.generateKeyFromPassword(
-        widget.name + userName + msg['Time Stamp'], msg['Salt']);
+    final String key =
+        await cryptor.generateKeyFromPassword(keyPassword, msg['Salt']);
     final String decrypted = await cryptor.decrypt(msg['Text'], key);
-    print(decrypted);
-    // print(msg['Time Stamp']);
+    print('Message Decrypted as $decrypted');
+
     return decrypted;
   }
 
@@ -54,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
           //   },
           // ),
           backgroundColor: kPrimaryColor,
-          title: new Text("Privchat"),
+          title: new Text(widget.name),
         ),
         body: new Column(children: <Widget>[
           new Flexible(
@@ -76,7 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           msg['Receiver'] == userName) ||
                       (msg['Receiver'] == widget.name &&
                           msg['Sender'] == userName)) {
-                    getDecryptedText(msg);
+                    // getDecryptedText(msg);
                     messages.add(msg);
                   }
                 }
@@ -87,9 +88,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   reverse: true,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
+                    print(messages[index]);
                     return messages[index]['Sender'] == widget.name
                         ? FutureBuilder(
-                            future: getDecryptedText(messages[index]),
+                            future: getDecryptedText(messages[index],
+                                '${userName}${widget.name}${messages[index]['Time Stamp']}'),
                             initialData: " ",
                             builder: (BuildContext context,
                                 AsyncSnapshot<String> text) {
@@ -103,7 +106,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               );
                             })
                         : FutureBuilder(
-                            future: getDecryptedText(messages[index]),
+                            future: getDecryptedText(messages[index],
+                                '${widget.name}${userName}${messages[index]['Time Stamp']}'),
                             initialData: " ",
                             builder: (BuildContext context,
                                 AsyncSnapshot<String> text) {
@@ -176,13 +180,15 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _isComposing = false;
     });
+
     var now = await NTP.now();
-    print('============================${widget.name}');
+    print('Encrypting Text Message');
     final cryptor = new PlatformStringCryptor();
     final String salt = await cryptor.generateSalt();
     final String key = await cryptor.generateKeyFromPassword(
         widget.name + userName + now.toString(), salt);
     final String encrypted = await cryptor.encrypt(_textController.text, key);
+    print('Message  encrypted as $encrypted');
     if (_textController.text != null) {
       ref.push().set({
         'Text': encrypted,
@@ -196,7 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       print('No Message');
     }
-    print(now.toString());
+
     setState(() {});
     await _textController.clear();
   }

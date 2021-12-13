@@ -241,11 +241,7 @@ class _SignInState extends State<SignIn> {
                         ),
                         InkWell(
                           onTap: () async {
-                            print('sign in');
-
-                            if (_formKey.currentState.validate()) {
-                              signIn();
-                            }
+                            signIn();
                           },
                           child: Container(
                             width: pWidth * 0.9,
@@ -286,31 +282,13 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  // Future<String> _getId() async {
-  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  //   if (Theme.of(context).platform == TargetPlatform.iOS) {
-  //     IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-  //     deviceUid = iosDeviceInfo.identifierForVendor; // unique ID on iOS
-  //     deviceType = 'iPhone';
-  //     setState(() {
-  //       print('Device uid found');
-  //     });
-  //   } else {
-  //     AndroidDeviceInfo androidDeviceInfo = await deviceInfo.androidInfo;
-  //     deviceUid = androidDeviceInfo.androidId; // unique ID on Android
-  //     deviceType = 'Android';
-  //     setState(() {
-  //       print('Device uid found');
-  //     });
-  //   }
-  // }
-
   void signIn() async {
     String userPass = '';
     String userKey = '';
     DataSnapshot snap =
         await FirebaseDatabase.instance.reference().child('Users').once();
     bool userExists = false;
+    print('Checking if user exists');
     if (snap == null || snap.value == null) {
     } else {
       snap.value.forEach((index, data) {
@@ -322,6 +300,7 @@ class _SignInState extends State<SignIn> {
       });
     }
     if (userExists == false) {
+      print('Creating New User');
       const _chars =
           'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
       Random _rnd = Random();
@@ -347,7 +326,7 @@ class _SignInState extends State<SignIn> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('email', emailC.text);
         await prefs.setString('name', nameC.text);
-
+        print('New User Created with email ${emailC.text}');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -356,18 +335,15 @@ class _SignInState extends State<SignIn> {
         );
       });
     } else {
-      var stream = LightCrypt('${emailC.text}${pwC.text}', 'ChaCha20');
-      String encryptPass =
-          stream.encrypt(pwC.text, '${emailC.text}${pwC.text}');
-      print(encryptPass);
+      print('Signing User In with email ${emailC.text}');
+      var stream = LightCrypt(userKey, 'ChaCha20');
       String decryptPass =
-          stream.decrypt(encryptPass, '${emailC.text}${pwC.text}');
-      print(decryptPass);
+          stream.decrypt(userPass, '${emailC.text}${pwC.text}');
       if (decryptPass == pwC.text) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('email', emailC.text);
         await prefs.setString('name', nameC.text);
-
+        print('Sign In Successful');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -375,7 +351,7 @@ class _SignInState extends State<SignIn> {
           ),
         );
       } else {
-        print('wrong Pass');
+        print('Wrong Pass');
       }
     }
   }

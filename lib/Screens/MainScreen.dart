@@ -67,34 +67,32 @@ class _MainScreenState extends State<MainScreen> {
 
                 data.forEach(
                     (index, data) => item.add({"key": index, ...data}));
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: item.length,
-                    itemBuilder: (context, index) {
-                      if (item[index]['name'] != userName)
-                        return ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ChatScreen(item[index]['name']),
-                              ),
-                            );
-                          },
-                          leading: CircleAvatar(
-                            child: Image.network(
-                                'https://static.thenounproject.com/png/4291178-200.png'),
-                            backgroundImage: NetworkImage(
-                                'https://static.thenounproject.com/png/4291178-200.png'),
-                            backgroundColor: Colors.white,
-                          ),
-                          title: Text(item[index]['name']),
-                        );
-                      else
-                        return Container();
-                    },
-                  ),
+                return ListView.builder(
+                  itemCount: item.length,
+                  itemBuilder: (context, index) {
+                    if (item[index]['name'] != userName)
+                      return ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChatScreen(item[index]['name']),
+                            ),
+                          );
+                        },
+                        leading: CircleAvatar(
+                          child: Image.network(
+                              'https://static.thenounproject.com/png/4291178-200.png'),
+                          backgroundImage: NetworkImage(
+                              'https://static.thenounproject.com/png/4291178-200.png'),
+                          backgroundColor: Colors.white,
+                        ),
+                        title: Text(item[index]['name']),
+                      );
+                    else
+                      return Container();
+                  },
                 );
               } else {
                 return Center(child: Text("No data"));
